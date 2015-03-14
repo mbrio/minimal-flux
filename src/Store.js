@@ -1,5 +1,6 @@
 import { EventEmitter } from 'eventemitter3';
 import assign from 'object-assign';
+import Constant from './Constant';
 
 export default class Store extends EventEmitter {
 
@@ -11,6 +12,8 @@ export default class Store extends EventEmitter {
      */
     handleAction(id, handler) {
         if (typeof handler !== 'function') return;
+        if (!(id instanceof Constant)) return;
+
         if(!this._handlers) this._handlers = {};
         this._handlers[id] = handler.bind(this);
     }
