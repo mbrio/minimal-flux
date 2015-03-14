@@ -4,6 +4,7 @@ import toposort from 'toposort';
 import getAllPropertyNames from 'getallpropertynames';
 import Actions from './Actions';
 import Store from './Store';
+import Constant from './Constant';
 
 let allActionsProperties = getAllPropertyNames(Actions.prototype);
 let allStoreProperties = getAllPropertyNames(Store.prototype);
@@ -85,13 +86,12 @@ export default class Dispatcher {
             for(let prop of props) {
                 // Bind function to instance
                 let fn = instance[prop].bind(instance);
-                // The action id is composed from the actions key and its function name
-                let id = [key, prop].join('.');
-                // Listen to the action event
-                instance.addListener(prop, this.dispatch.bind(this, id));
                 // Add function to the decorated object
                 this.actions[key][prop] = fn;
             }
+
+            // Listen to the action event
+            instance.addListener(Constant.fluxAction, this.dispatch.bind(this));
         }
     }
 
@@ -123,7 +123,7 @@ export default class Dispatcher {
             let key = order[i];
             let Store = stores[key];
             // Handle plain and array definition
-            if(Array.isArray(Store)) Store = Store[0];  
+            if(Array.isArray(Store)) Store = Store[0];
             // Make stores available at construction time
             assign(Store.prototype, { stores: this.stores });
             // Instantiate the store
@@ -136,7 +136,7 @@ export default class Dispatcher {
                 // Only regard functions
                 return typeof instance[prop] === 'function' &&
                     // Functions that start with get
-                    (prop.indexOf('get') === 0 || 
+                    (prop.indexOf('get') === 0 ||
                         // Event emitter function, except emit
                         (eventEmitterProperties.indexOf(prop) > -1 && prop !== 'emit'));
             });
