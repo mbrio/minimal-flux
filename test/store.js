@@ -2,31 +2,34 @@ import test from 'tape';
 import Dispatcher from './../src/Dispatcher';
 import Actions from './../src/Actions';
 import Store from './../src/Store';
+import Constant from './../src/Constant';
 
 let handlerCalled = [];
 let constructed = [];
 let handled = [];
 
+let fooConstants = Constant.createConstants('foo', 'bar', 'baz');
+
 class FooStore extends Store {
     constructor() {
         constructed.push('foo');
-        this.handleAction('foo.foo', this.handleFooFoo);
-        this.handleAction('foo.bar', this.handleFooBar);
-        this.handleAction('foo.baz', this.handleFooBaz);
+        this.handleAction(fooConstants.foo, this.handleFooFoo);
+        this.handleAction(fooConstants.bar, this.handleFooBar);
+        this.handleAction(fooConstants.baz, this.handleFooBaz);
     }
 
     handleFooFoo(foo) {
-        handlerCalled.push(['foo.foo', foo]);
+        handlerCalled.push([fooConstants.foo, foo]);
         handled.push('foo');
     }
 
     handleFooBar(bar) {
-        handlerCalled.push(['foo.bar', bar]);
-        this.stopHandleAction('foo.bar');
+        handlerCalled.push([fooConstants.bar, bar]);
+        this.stopHandleAction(fooConstants.bar);
     }
 
     handleFooBaz(baz) {
-        handlerCalled.push(['foo.baz', baz]);
+        handlerCalled.push([fooConstants.baz, baz]);
         this.setState({baz: baz});
     }
 }
@@ -36,7 +39,7 @@ class BarStore extends Store {
     constructor() {
         constructed.push('bar');
         barStoreFoo = this.stores.foo;
-        this.handleAction('foo.foo', this.handleFooFoo);
+        this.handleAction(fooConstants.foo, this.handleFooFoo);
     }
 
     handleFooFoo(foo) {
@@ -47,7 +50,7 @@ class BarStore extends Store {
 class BazStore extends Store {
     constructor() {
         constructed.push('baz');
-        this.handleAction('foo.foo', this.handleFooFoo);
+        this.handleAction(fooConstants.foo, this.handleFooFoo);
     }
 
     handleFooFoo(foo) {
@@ -57,13 +60,13 @@ class BazStore extends Store {
 
 class FooActions extends Actions {
     foo(foo) {
-        this.dispatch('foo', foo);
+        this.dispatch(fooConstants.foo, foo);
     }
     bar(bar) {
-        this.dispatch('bar', bar);
+        this.dispatch(fooConstants.bar, bar);
     }
     baz(baz) {
-        this.dispatch('baz', baz);
+        this.dispatch(fooConstants.baz, baz);
     }
 }
 
@@ -77,10 +80,10 @@ let flux = new Dispatcher({
 });
 
 test('Store: resolve stores', (t) => {
-    t.ok(constructed.indexOf('bar') === 2, 
+    t.ok(constructed.indexOf('bar') === 2,
         'should resolve in a topological order');
 
-    t.ok(barStoreFoo === flux.stores.foo, 
+    t.ok(barStoreFoo === flux.stores.foo,
         'should make stores available at construction time');
 
     t.end();
@@ -120,7 +123,7 @@ test('Store: handleAction()', (t) => {
     handlerCalled = [];
     flux.actions.foo.foo('foo');
 
-    t.deepEqual(handlerCalled, [['foo.foo', 'foo']],
+    t.deepEqual(handlerCalled, [[fooConstants.foo, 'foo']],
         'should listen to action');
 
     t.end();
@@ -131,7 +134,7 @@ test('Store: stopHandleAction()', (t) => {
     flux.actions.foo.bar('bar');
     flux.actions.foo.bar('bar');
 
-    t.deepEqual(handlerCalled, [['foo.bar', 'bar']],
+    t.deepEqual(handlerCalled, [[fooConstants.bar, 'bar']],
         'should stop listen to action');
 
     t.end();
@@ -151,10 +154,10 @@ test('Store: setState()', (t) => {
     store.on('change', () => emitted = true);
     flux.actions.foo.baz('baz');
 
-    t.deepEqual(store.getState(), {baz: 'baz'}, 
+    t.deepEqual(store.getState(), {baz: 'baz'},
         'should set state');
 
-    t.ok(emitted, 
+    t.ok(emitted,
         'should emit change event');
 
     t.end();
