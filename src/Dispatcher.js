@@ -91,7 +91,7 @@ export default class Dispatcher {
             }
 
             // Listen to the action event
-            instance.addListener(Constant.fluxAction, this.dispatch.bind(this));
+            instance.addListener('dispatch', this.dispatch.bind(this));
         }
     }
 
