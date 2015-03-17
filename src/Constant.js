@@ -24,7 +24,7 @@ function requestConstantId() {
 }
 
 /**
- * Creates a Constant that identifies a Flux action
+ * A Constant that identifies a Flux action
  *
  * @class
  */
@@ -54,10 +54,10 @@ class Constant {
 
 /**
  * A helper method that creats Constant instances.
- * @param  {...string} actionNames A list of all actions to generate Constant
- *                                 instances for.
- * @return {object}                An associative array of Constant instances
- *                                 keys by the passed in action names.
+ * @param  {...string} actionNames    A list of all actions to generate Constant
+ *                                    instances for.
+ * @return {Object<string, Constant>} An associative array of Constant instances
+ *                                    keyed by the action names.
  */
 Constant.createConstants = function (...actionNames) {
   let constants = {};
