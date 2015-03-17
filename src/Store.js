@@ -6,7 +6,7 @@ export default class Store extends EventEmitter {
 
     /**
      * Register an action handler
-     * @param  {String}   id      Id of the action (e.g. 'todos.create')
+     * @param  {Constant}   id      Id of the action (e.g. 'todos.create')
      * @param  {Function} handler Action handler
      * @return {void}
      */
@@ -15,17 +15,20 @@ export default class Store extends EventEmitter {
         if (!(id instanceof Constant)) return;
 
         if(!this._handlers) this._handlers = {};
-        this._handlers[id] = handler.bind(this);
+        this._handlers[id.toActionId()] = handler.bind(this);
     }
 
     /**
      * Unregister an action handler
-     * @param  {String} id  Id of the action (e.g. 'todos.create')
+     * @param  {Constant} id  Id of the action (e.g. 'todos.create')
      * @return {void}
      */
     stopHandleAction(id) {
-        if(!this._handlers || !this._handlers[id]) return;
-        this._handlers[id] = undefined;
+        if (!(id instanceof Constant)) return;
+
+        let actionId = id.toActionId();
+        if(!this._handlers || !this._handlers[actionId]) return;
+        this._handlers[actionId] = undefined;
     }
 
     /**

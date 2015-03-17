@@ -9,6 +9,7 @@ export default class Actions extends EventEmitter {
    * @return {boolean}         true if event had listeners, false otherwise
    */
   dispatch(action, ...args) {
+    // If the argument passed is not a Constant we can not handle the action
     if (!(action instanceof Constant)) {
       console.warn(
         `${this.constructor.name} tried emitting a non-constant. ` +

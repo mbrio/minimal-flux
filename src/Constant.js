@@ -37,17 +37,19 @@ class Constant {
    */
   constructor(name) {
     this.name = name;
+
+    // Request an ID for our Constant
     this._hashKeyPrefix = requestConstantId();
   }
 
   /**
-   * The value returned represents a unique identifier for use with associateive
+   * The value returned represents a unique identifier for use with associative
    * arrays.
    * @return {string}
    */
-  toString() {
-    // We use a combination of the generated hash key and the action name to
-    // uniquely identify this instance.
+  toActionId() {
+    // We use a combination of the generated hash key prefix and the action name
+    // to uniquely identify this instance.
     return `[object Object] (${this._hashKeyPrefix}-${this.name})`;
   }
 }

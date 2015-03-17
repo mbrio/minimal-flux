@@ -38,7 +38,7 @@ export default class Dispatcher {
 
     /**
      * Dispatches an action
-     * @param  {String}    id   The id of the action (e.g. 'todos.create')
+     * @param  {Constant}    id   The id of the action (e.g. 'todos.create')
      * @param  {...mixed}  args Arguments that will be passed to the handlers
      * @return {void}
      */
@@ -53,8 +53,9 @@ export default class Dispatcher {
         let stores = this._stores;
         for (let key of this.order) {
             let handlers = stores[key]._handlers;
-            if(!handlers || !handlers[id]) continue;
-            handlers[id](...args);
+            let actionId = id.toActionId();
+            if(!handlers || !handlers[actionId]) continue;
+            handlers[actionId](...args);
         }
 
         this._isDispatching = false;
